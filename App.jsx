@@ -1,42 +1,36 @@
 
-import './App.css'
-import { useState } from 'react'
-import { Configuration, OpenAIApi } from 'openai'
+import { Container, Row, Col } from "react-bootstrap";
+import { Routes, Route } from "react-router-dom";
+import "./App.css";
+import Home from "./components/Home";
+import Login from "./components/Login";
+import Signup from "./components/Signup";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { UserAuthContextProvider } from "./components/context/UserAuthContext";
+
 function App() {
-  const [prompt, setPrompt] = useState('')
-  const [result, setResult] = useState('')
-  import.meta.env.VITE_Open_AI_Key;
-  const configuration = new Configuration({
-    apiKey: import.meta.env.VITE_Open_AI_Key,
-});
-
-
-const openai = new OpenAIApi(configuration);
-
-
-const generateImage = async () => {
-  const response = await openai.createImage({
-    prompt: prompt,
-    n: 1,
-    size: "1024x1024",
-  });
-  response.data.data[0].url;
-  
-  setResult(response.data.data[0].url)
-};
   return (
-    <div className='app-main'>
-      <h1>Generate an Image using Open AI API</h1>
-      <h2>Created by Benjamin Skogman</h2>
-      <input className='app-input'
-      placeholder='Try "Walter White"'
-      onChange={(e) => setPrompt(e.target.value)} 
-      />
-
-     <button onClick={generateImage}>Generate Image</button>
-    {result.length > 0 ? <img className='result-image' src={result} alt='your result' /> : <></>}
-    </div>
+    <Container style={{ width: "400px" }}>
+      <Row>
+        <Col>
+          <UserAuthContextProvider>
+            <Routes>
+              <Route
+                path="/home"
+                element={
+                  <ProtectedRoute>
+                    <Home />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+            </Routes>
+          </UserAuthContextProvider>
+        </Col>
+      </Row>
+    </Container>
   );
 }
 
-export default App
+export default App;
